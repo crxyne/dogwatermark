@@ -3,11 +3,13 @@ package org.crayne.dogwatermark.listener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.crayne.dogwatermark.util.DogwaterSettings;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL11;
 
 public class RenderEventListener {
 
@@ -47,7 +49,9 @@ public class RenderEventListener {
     }
 
     @SubscribeEvent
-    public void renderEvent(@NotNull final RenderGameOverlayEvent ev) {
+    public void renderEvent(@NotNull final RenderGameOverlayEvent.Post ev) {
+        if (ev.getType() != RenderGameOverlayEvent.ElementType.TEXT) return;
+
         final Pair<Float, Float> xy = coordsUsingAlignment(ev.getResolution());
 
         Minecraft.getMinecraft().fontRenderer.drawString(settings.watermarkText(), xy.getLeft(), xy.getRight(), settings.watermarkColor().getRGB(), settings.watermarkShadow());
