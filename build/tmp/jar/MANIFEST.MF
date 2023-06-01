@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: dogwatermark
-Implementation-Version: 1.0
+Implementation-Version: 1.2
 Specification-Vendor: DogwaterMark
 Specification-Title: DogwaterMark
-Implementation-Timestamp: 2023-05-09T19:02:14+0200
+Implementation-Timestamp: 2023-06-01T23:53:23+0200
 Specification-Version: 1
 Implementation-Vendor: DogwaterMark
 

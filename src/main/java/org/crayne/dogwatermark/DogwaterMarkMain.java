@@ -1,5 +1,6 @@
 package org.crayne.dogwatermark;
 
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -10,6 +11,12 @@ import org.crayne.dogwatermark.listener.CommandEventListener;
 import org.crayne.dogwatermark.listener.RenderEventListener;
 import org.crayne.dogwatermark.util.DogwaterSettings;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Mod(modid = DogwaterMarkMain.modId)
 public class DogwaterMarkMain {
@@ -27,8 +34,15 @@ public class DogwaterMarkMain {
     public void init(@NotNull final FMLInitializationEvent event) {
         logger.info("Initializing DogwaterMark...");
 
+        settings.attemptLoad();
+
         MinecraftForge.EVENT_BUS.register(new RenderEventListener(settings));
-        ClientCommandHandler.instance.registerCommand(new CommandEventListener(settings));
+        MinecraftForge.EVENT_BUS.register(new CommandEventListener(settings));
+    }
+
+    @NotNull
+    public static Logger logger() {
+        return logger;
     }
 
 }

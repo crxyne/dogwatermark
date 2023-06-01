@@ -1,24 +1,20 @@
 package org.crayne.dogwatermark.listener;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.client.IClientCommand;
-import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.crayne.dogwatermark.DogwaterMarkMain;
 import org.crayne.dogwatermark.util.DogwaterSettings;
 import org.crayne.dogwatermark.util.WatermarkAlignment;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-public class CommandEventListener extends CommandBase implements IClientCommand {
+public class CommandEventListener {
 
     private final DogwaterSettings settings;
 
@@ -26,18 +22,15 @@ public class CommandEventListener extends CommandBase implements IClientCommand 
         this.settings = settings;
     }
 
-    public boolean allowUsageWithoutPrefix(@NotNull final ICommandSender sender, @NotNull final String message) {
-        return false;
-    }
+    @SubscribeEvent
+    public void chatEvent(@NotNull final ClientChatEvent ev) {
+        final String message = ev.getMessage();
+        if (!message.startsWith(")")) return;
 
-    @NotNull
-    public String getName() {
-        return "dwm";
-    }
-
-    @NotNull
-    public String getUsage(@NotNull final ICommandSender sender) {
-        return "";
+        final String command = message.substring(1).trim();
+        final String[] args = Arrays.stream(command.split(" ")).map(String::trim).toArray(String[]::new);
+        ev.setCanceled(true);
+        execute(args);
     }
 
     private static void message(@NotNull final String msg) {
@@ -45,7 +38,7 @@ public class CommandEventListener extends CommandBase implements IClientCommand 
     }
 
     private static void unrecognizedUsage(@NotNull final String @NotNull [] args, @NotNull final String param) {
-        message("§cExpected a parameter after the selected mode. Usage: /" + args[0] + " <" + param + ">.");
+        message("§cExpected a parameter after the selected mode. Usage: )" + args[0] + " <" + param + ">.");
     }
 
     private static void success(@NotNull final String mode) {
@@ -55,6 +48,7 @@ public class CommandEventListener extends CommandBase implements IClientCommand 
     private boolean commandChangeText(@NotNull final String @NotNull [] args) {
         final String text = String.join(" ", Arrays.asList(args).subList(1, args.length));
         settings.watermarkText(text);
+        settings.attemptSave();
         success("text");
         return true;
     }
@@ -72,6 +66,7 @@ public class CommandEventListener extends CommandBase implements IClientCommand 
             return false;
         }
         settings.watermarkColor(color);
+        settings.attemptSave();
         success("color");
         return true;
     }
@@ -87,6 +82,7 @@ public class CommandEventListener extends CommandBase implements IClientCommand 
             return false;
         }
         settings.watermarkAlignment(alignment.get());
+        settings.attemptSave();
         success("alignment");
         return true;
     }
@@ -98,17 +94,18 @@ public class CommandEventListener extends CommandBase implements IClientCommand 
         }
         final boolean enable = Boolean.parseBoolean(args[1]);
         settings.watermarkShadow(enable);
+        settings.attemptSave();
         success("shadow mode");
         return true;
     }
 
     private static void commandUnknownMode(@NotNull final String @NotNull [] args) {
-        message("§cUnknown /dwm command mode: " + args[0] + ". Use /dwm along with any of the following arguments: text, color, align, shadow.");
+        message("§cUnknown command mode: " + args[0] + ". Use the prefix ) along with any of the following arguments: text, color, align, shadow.");
     }
 
-    public void execute(@NotNull final MinecraftServer server, @NotNull final ICommandSender sender, @NotNull final String @NotNull [] args) {
+    public void execute(@NotNull final String @NotNull [] args) {
         if (args.length == 0) {
-            message("§cNo arguments provided. Use /dwm along with any of the following arguments: text, color, align, shadow.");
+            message("§cNo arguments provided. Use the prefix ) along with any of the following arguments: text, color, align, shadow.");
             return;
         }
         final boolean success;
