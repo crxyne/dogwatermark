@@ -4,7 +4,7 @@ create fake client watermarks for the goofs and laughs. this is a forge mod for 
 ## Usage
 usage: 
 ```
-/dwm <mode> <params>
+)<mode> <params>
 ```
 possible modes are:
 - text => change text (any form of text, spaces are fine)
@@ -14,9 +14,9 @@ possible modes are:
 
 example for a **red** watermark, **with** shadow, aligned to the **bottom right** of the screen
 ```
-/dwm text DogwaterClient v4.2.0
-/dwm color #ff0000
-/dwm align bottom_right
-/dwm shadow true
+)text DogwaterClient v4.2.0
+)color #ff0000
+)align bottom_right
+)shadow true
 ```
-to hide the watermark, simply use `/dwm text`, which makes the watermark have empty text.
+to hide the watermark, simply use `)text`, which makes the watermark have empty text.
